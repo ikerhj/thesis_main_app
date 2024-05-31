@@ -50,7 +50,7 @@ bool button_pressed = false;
 uint32_t button_number = 0;
 
 // Array to store device IDs of RDs found via the receive function
-uint16_t rd_device_ids[MAX_RD_DEVICES];
+uint32_t rd_device_ids[MAX_RD_DEVICES];
 
 // Exit the application
 static bool EXIT = false;
@@ -133,9 +133,14 @@ struct phy_ctrl_field_common_type_2_001
 
 // Structure of the data that is transmitted
 
-struct incoming_data_packet
+struct rx_data_packet
 {
-	uint8_t button_number;
+	uint32_t transmitter_id;
+};
+
+struct tx_data_packet
+{
+	uint32_t button_number;
 };
 
 // ETSI TS 103 636-2  spec 8.3.3 RSSI is reported every 0.5dbm
@@ -271,11 +276,10 @@ static void pdc(const uint64_t *time,
 				const struct nrf_modem_dect_phy_rx_pdc_status *status,
 				const void *data, uint32_t len)
 {
-	struct incoming_data_packet *packet = (struct incoming_data_packet *)data;
+	struct rx_data_packet *packet = (struct rx_data_packet *)data;
 	/* Received RSSI value is in fixed precision format Q14.1 */
 	LOG_INF("RX(RSSI: %d.%d): %d",
-			(status->rssi_2 / 2), (status->rssi_2 & 0b1) * 5, packet->button_number);
-	led_control(packet->button_number);
+			(status->rssi_2 / 2), (status->rssi_2 & 0b1) * 5, packet->transmitter_id);
 }
 
 static void pdc_crc_err(
@@ -595,6 +599,7 @@ int main(void)
 	int err;
 	size_t tx_len;
 	uint8_t tx_buf[DATA_LEN_MAX];
+	uint32_t receiver_id = 0;
 
 	printk("Started new app\n");
 
@@ -639,14 +644,30 @@ int main(void)
 		// /* Wait for RX operation to complete. */
 		k_sem_take(&opt_sem, K_FOREVER);
 
-		if (button_pressed == true)
+		if (button_pressed == true && rd_device_ids[0] != 0)
 		{
-			struct incoming_data_packet data =
+			switch (button_number)
+			{
+			case 1:
+				receiver_id = rd_device_ids[0];
+				break;
+			case 2:
+				receiver_id = rd_device_ids[1];
+				break;
+			case 4:
+				receiver_id = rd_device_ids[2];
+				break;
+			case 8:
+				break;
+			default:
+				break;
+			}
+			struct tx_data_packet data =
 				{
 					.button_number = button_number,
 				};
 			// TODO: The error control should be implemented in the transmit function and it shouldn't shout down when an error occurs
-			err = transmit_broadcast(0, &data, sizeof(data));
+			err = transmit_unicast(0, &data, sizeof(data), receiver_id);
 			if (err)
 			{
 				LOG_ERR("Transmit failed, err %d", err);
@@ -654,7 +675,6 @@ int main(void)
 
 			// /* Wait for TX operation to complete. */
 			k_sem_take(&opt_sem, K_FOREVER);
-			led_control(data.button_number);
 			LOG_INF("TX:%d", data.button_number);
 			button_pressed = false;
 		}

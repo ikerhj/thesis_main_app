@@ -35,7 +35,7 @@ LOG_MODULE_REGISTER(app);
 #define CONFIG_NETWORK_ID 91
 #define CONFIG_TX_POWER 11
 #define CONFIG_MCS 1
-#define CONFIG_RX_PERIOD_S 1
+#define CONFIG_RX_PERIOD_S 7
 #define CONFIG_TX_TRANSMISSIONS 30
 
 // Overall global variables used for the application
@@ -46,8 +46,7 @@ static uint16_t device_id;
 int crc_errors = 0;
 int rssi_average = 0;
 int n = 0; // Counter for RSSI calculations
-bool button_pressed = false;
-uint32_t button_number = 0;
+bool leds_on = false;
 
 // Array to store device IDs of RDs found via the receive function
 uint16_t rd_device_ids[MAX_RD_DEVICES];
@@ -133,9 +132,14 @@ struct phy_ctrl_field_common_type_2_001
 
 // Structure of the data that is transmitted
 
-struct data_packet
+struct incoming_data_packet
 {
 	uint8_t button_number;
+};
+
+struct tx_data_packet
+{
+	uint32_t transmitter_id;
 };
 
 // ETSI TS 103 636-2  spec 8.3.3 RSSI is reported every 0.5dbm
@@ -246,6 +250,12 @@ void led_control(uint8_t button_number)
 	dk_set_led_off(DK_LED3);
 	dk_set_led_off(DK_LED4);
 
+	if (leds_on)
+	{
+		leds_on = false;
+		return;
+	}
+
 	switch (button_number)
 	{
 	case 1 /* constant-expression */:
@@ -265,17 +275,22 @@ void led_control(uint8_t button_number)
 	default:
 		break;
 	}
+	leds_on = true;
 }
 /* Physical Data Channel reception notification. */
 static void pdc(const uint64_t *time,
 				const struct nrf_modem_dect_phy_rx_pdc_status *status,
 				const void *data, uint32_t len)
 {
-	struct data_packet *packet = (struct data_packet *)data;
+	struct incoming_data_packet *packet = (struct incoming_data_packet *)data;
+	u_int8_t button_number = packet->button_number;
 	/* Received RSSI value is in fixed precision format Q14.1 */
 	LOG_INF("RX(RSSI: %d.%d): %d",
-			(status->rssi_2 / 2), (status->rssi_2 & 0b1) * 5, packet->button_number);
-	led_control(packet->button_number);
+			(status->rssi_2 / 2), (status->rssi_2 & 0b1) * 5, button_number);
+	if (button_number < 5)
+	{
+		led_control(packet->button_number);
+	}
 }
 
 static void pdc_crc_err(
@@ -529,7 +544,7 @@ static int receive(uint32_t handle)
 			.filter.short_network_id = CONFIG_NETWORK_ID & 0xff,
 			.filter.is_short_network_id_used = 1,
 			/* listen for everything (broadcast mode used) */
-			.filter.receiver_identity = 0,
+			.filter.receiver_identity = device_id,
 
 		};
 
@@ -582,19 +597,12 @@ void button_handler(uint32_t button_state, uint32_t has_changed)
 {
 
 	// Format the messsage before is sent
-	button_pressed = true;
-	if (button_state != 0)
-	{
-		printk("Button state: %d\n", button_state);
-		button_number = button_state;
-	}
+	printk("Button state: %d\n", button_state);
 }
 
 int main(void)
 {
 	int err;
-	size_t tx_len;
-	uint8_t tx_buf[DATA_LEN_MAX];
 
 	printk("Started new app\n");
 
@@ -639,25 +647,20 @@ int main(void)
 		// /* Wait for RX operation to complete. */
 		k_sem_take(&opt_sem, K_FOREVER);
 
-		if (button_pressed == true)
-		{
-			struct data_packet data =
-				{
-					.button_number = button_number,
-				};
-			// TODO: The error control should be implemented in the transmit function and it shouldn't shout down when an error occurs
-			err = transmit_broadcast(0, &data, sizeof(data));
-			if (err)
+		struct tx_data_packet data =
 			{
-				LOG_ERR("Transmit failed, err %d", err);
-			}
-
-			// /* Wait for TX operation to complete. */
-			k_sem_take(&opt_sem, K_FOREVER);
-			led_control(data.button_number);
-			LOG_INF("TX:%d", data.button_number);
-			button_pressed = false;
+				.transmitter_id = device_id,
+			};
+		// TODO: The error control should be implemented in the transmit function and it shouldn't shout down when an error occurs
+		err = transmit_broadcast(0, &data, sizeof(data));
+		if (err)
+		{
+			LOG_ERR("Transmit failed, err %d", err);
 		}
+
+		// /* Wait for TX operation to complete. */
+		k_sem_take(&opt_sem, K_FOREVER);
+		LOG_INF("TX:%d", data.transmitter_id);
 	}
 
 	return shut_down();
