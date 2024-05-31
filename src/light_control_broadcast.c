@@ -1,5 +1,5 @@
 /**
- * @file main.c
+ * @file light_control_broadcast.c
  * @brief This file contains the main application code for the nRF broadcast project.
  *
  * The code initializes the necessary modules, handles button events, and defines callbacks for the DECT PHY operations.
@@ -35,7 +35,7 @@ LOG_MODULE_REGISTER(app);
 #define CONFIG_NETWORK_ID 91
 #define CONFIG_TX_POWER 11
 #define CONFIG_MCS 1
-#define CONFIG_RX_PERIOD_S 5
+#define CONFIG_RX_PERIOD_S 1
 #define CONFIG_TX_TRANSMISSIONS 30
 
 // Overall global variables used for the application
@@ -46,6 +46,8 @@ static uint16_t device_id;
 int crc_errors = 0;
 int rssi_average = 0;
 int n = 0; // Counter for RSSI calculations
+bool button_pressed = false;
+uint32_t button_number = 0;
 
 // Array to store device IDs of RDs found via the receive function
 uint16_t rd_device_ids[MAX_RD_DEVICES];
@@ -127,6 +129,13 @@ struct phy_ctrl_field_common_type_2_001
 	uint32_t feedback_info_hi : 4; // Feedback information
 	uint32_t feedback_format : 4;  // Defines the coding of the feedback
 	uint32_t feedback_info_lo : 8;
+};
+
+// Structure of the data that is transmitted
+
+struct data_packet
+{
+	uint8_t button_number;
 };
 
 // ETSI TS 103 636-2  spec 8.3.3 RSSI is reported every 0.5dbm
@@ -230,14 +239,43 @@ static void pcc_crc_err(const uint64_t *time, const struct nrf_modem_dect_phy_rx
 	LOG_INF("PDC CRC ERROR, rssi_2, %d, crc error count, %d, continuing", resp, crc_errors);
 }
 
+void led_control(uint8_t button_number)
+{
+	dk_set_led_off(DK_LED1);
+	dk_set_led_off(DK_LED2);
+	dk_set_led_off(DK_LED3);
+	dk_set_led_off(DK_LED4);
+
+	switch (button_number)
+	{
+	case 1 /* constant-expression */:
+		/* code */
+		dk_set_led_on(DK_LED1);
+		break;
+	case 2:
+		dk_set_led_on(DK_LED2);
+		break;
+	case 4:
+		dk_set_led_on(DK_LED3);
+		break;
+	case 8:
+		dk_set_led_on(DK_LED4);
+		break;
+
+	default:
+		break;
+	}
+}
 /* Physical Data Channel reception notification. */
 static void pdc(const uint64_t *time,
 				const struct nrf_modem_dect_phy_rx_pdc_status *status,
 				const void *data, uint32_t len)
 {
+	struct data_packet *packet = (struct data_packet *)data;
 	/* Received RSSI value is in fixed precision format Q14.1 */
-	LOG_INF("RX(RSSI: %d.%d): %s",
-			(status->rssi_2 / 2), (status->rssi_2 & 0b1) * 5, (char *)data);
+	LOG_INF("RX(RSSI: %d.%d): %d",
+			(status->rssi_2 / 2), (status->rssi_2 & 0b1) * 5, packet->button_number);
+	led_control(packet->button_number);
 }
 
 static void pdc_crc_err(
@@ -308,21 +346,6 @@ struct nrf_modem_dect_phy_init_params dect_phy_init_params = {
 	.harq_rx_expiry_time_us = 5000000,
 	.harq_rx_process_count = 4,
 };
-
-/**
- * @brief Handles button events.
- *
- * This function is called when a button state changes. It takes two parameters:
- * - `button_state`: The current state of the button(s).
- * - `has_changed`: A bitmask indicating which button(s) have changed state.
- *
- * The function does not return a value.
- */
-void button_handler(uint32_t button_state, uint32_t has_changed)
-{
-	printk("Button state: %d\n", button_state);
-	EXIT = true;
-}
 
 /**
  * @brief Initializes the modem.
@@ -544,10 +567,32 @@ int shut_down()
 	return 0;
 }
 
+/**
+ * @brief Handles button events.
+ *
+ * This function is called when a button state changes. It takes two parameters:
+ * - `button_state`: The current state of the button(s).
+ * - `has_changed`: A bitmask indicating which button(s) have changed state.
+ *
+ * The function does not return a value.
+ *
+ * This function shouldn't transmit the value, the transmit should be correctly transmitted in the main loop so it's correctly handled via the semaphores
+ */
+void button_handler(uint32_t button_state, uint32_t has_changed)
+{
+
+	// Format the messsage before is sent
+	button_pressed = true;
+	if (button_state != 0)
+	{
+		printk("Button state: %d\n", button_state);
+		button_number = button_state;
+	}
+}
+
 int main(void)
 {
 	int err;
-	uint32_t tx_counter_value = 0;
 	size_t tx_len;
 	uint8_t tx_buf[DATA_LEN_MAX];
 
@@ -580,63 +625,10 @@ int main(void)
 	}
 
 	// MAIN PROGRAM LOOP
-	// RN: Just transmit hellourr and temp data
-	while (1 && !EXIT)
+	while (1)
 	{
-		/** Transmitting message */
-
-		dk_set_led_on(DK_LED1);
-
-		// Format the messsage before is sent
-		tx_len = sprintf(tx_buf, "Hello RD! I'm %d (%d)", device_id, tx_counter_value);
-		LOG_INF("TX:%s", tx_buf);
-		// TODO: The error control should be implemented in the transmit function and it shouldn't shout down when an error occurs
-		err = transmit_broadcast(tx_counter_value, tx_buf, tx_len);
-		if (err)
-		{
-			LOG_ERR("Transmit failed, err %d", err);
-			return err;
-		}
-
-		tx_counter_value++;
-		if ((tx_counter_value >= CONFIG_TX_TRANSMISSIONS) && CONFIG_TX_TRANSMISSIONS)
-		{
-			LOG_INF("Reached maximum number of transmissions (%d)",
-					CONFIG_TX_TRANSMISSIONS);
-			break;
-		}
-
-		// /* Wait for TX operation to complete. */
-		k_sem_take(&opt_sem, K_FOREVER);
-
-		// Transmit a HARQ message if there are receivers
-		for (int i = 0; i < MAX_RD_DEVICES; i++)
-		{
-			if (rd_device_ids[i] != 0)
-			{
-				// Format the message before it is sent
-				// TODO: implement broadcast.c handler manager
-
-				tx_len = sprintf(tx_buf, "Hi %d! I'm %d", rd_device_ids[i], device_id);
-				LOG_INF("TX HARQ:%s", tx_buf);
-				err = transmit_unicast(tx_counter_value + 100, tx_buf, tx_len, rd_device_ids[i]);
-				if (err)
-				{
-					LOG_ERR("HARQ Transmit failed, err %d", err);
-					return err;
-				}
-				// Remove the id of the device that has been sent the message
-				rd_device_ids[i] = 0;
-				// /* Wait for TX operation to complete. */
-				k_sem_take(&opt_sem, K_FOREVER);
-			}
-		}
-		dk_set_led_off(DK_LED1);
-
-		dk_set_led_on(DK_LED2);
-
 		// Listen for messages
-		err = receive(tx_counter_value + 200);
+		err = receive(200);
 
 		if (err)
 		{
@@ -646,7 +638,26 @@ int main(void)
 
 		// /* Wait for RX operation to complete. */
 		k_sem_take(&opt_sem, K_FOREVER);
-		dk_set_led_off(DK_LED2);
+
+		if (button_pressed == true)
+		{
+			struct data_packet data =
+				{
+					.button_number = button_number,
+				};
+			// TODO: The error control should be implemented in the transmit function and it shouldn't shout down when an error occurs
+			err = transmit_broadcast(0, &data, sizeof(data));
+			if (err)
+			{
+				LOG_ERR("Transmit failed, err %d", err);
+			}
+
+			// /* Wait for TX operation to complete. */
+			k_sem_take(&opt_sem, K_FOREVER);
+			led_control(data.button_number);
+			LOG_INF("TX:%d", data.button_number);
+			button_pressed = false;
+		}
 	}
 
 	return shut_down();
