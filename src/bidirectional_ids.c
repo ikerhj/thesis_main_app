@@ -1,6 +1,6 @@
 /**
- * @file main.c
- * @brief This file contains the main application code for the nRF broadcast project.
+ * @file bidirectional_ids.c
+ * @brief This file contains an application creates a bidirectional communication between devices.
  *
  * The code initializes the necessary modules, handles button events, and defines callbacks for the DECT PHY operations.
  * It also includes global variables and functions for transmitting and receiving data.
@@ -8,16 +8,16 @@
  *
  *
  * TODO:
- * - Implement yhe Type 2 header and test if it works
- * - Test different types of configurations for the DECT PHY
  * - Add the same reporting as in broadcast.c
  * - Add different functionality: report temperature, etc.
- *    - A functionality: Based on the botton pressed in the sink device the RDs will light one LED or another. when a broadcast is received then the RD is informed to stop sending broadcast. When the rd turns off the RD sends a broadcast to inform the sink that it is off
  * FIXED:
  * - This code has problems with the transmission of the data. It is not being received by the other device
  *    - The phy_ctrl_field_common structure should follow a specific order due to endianness
+ * - The sending a unicast message doesn't work properly. Must related to the formationg of the control header: My big head was right
  * FIXME:
- * - The sending a unicast message doesn't work properly. Must related to the formationg of the control header
+ * DONE:
+ * - Test different types of configurations for the DECT PHY
+ * - Implement yhe Type 2 header and test if it works
  */
 
 #include <string.h>
