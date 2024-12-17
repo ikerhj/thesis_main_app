@@ -405,7 +405,7 @@ int main(void)
                 printk("TX ROLE\n");
                 while (1)
                 {
-                        k_msleep(330);
+                        k_msleep(30);
                         if (i % 2 == 0)
                         {
                                 dk_set_led_on(DK_LED1);

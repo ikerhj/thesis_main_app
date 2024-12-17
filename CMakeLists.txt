@@ -3,4 +3,4 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
 project(broadcast)
 
-target_sources(app PRIVATE src/light_control_unicast_sink.c)
+target_sources(app PRIVATE src/latency/bidirec_mod.c)

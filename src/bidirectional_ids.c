@@ -33,10 +33,10 @@ LOG_MODULE_REGISTER(app);
 // Global variables that are defined here but must be defined in a different config file somehow
 #define CONFIG_CARRIER 1677
 #define CONFIG_NETWORK_ID 91
-#define CONFIG_TX_POWER 11
+#define CONFIG_TX_POWER 10
 #define CONFIG_MCS 1
 #define CONFIG_RX_PERIOD_S 5
-#define CONFIG_TX_TRANSMISSIONS 30
+#define CONFIG_TX_TRANSMISSIONS 3000
 
 // Overall global variables used for the application
 #define DATA_LEN_MAX 32
@@ -506,7 +506,7 @@ static int receive(uint32_t handle)
 			.filter.short_network_id = CONFIG_NETWORK_ID & 0xff,
 			.filter.is_short_network_id_used = 1,
 			/* listen for everything (broadcast mode used) */
-			.filter.receiver_identity = 0,
+			.filter.receiver_identity = device_id,
 
 		};
 
@@ -589,6 +589,7 @@ int main(void)
 
 		// Format the messsage before is sent
 		tx_len = sprintf(tx_buf, "Hello RD! I'm %d (%d)", device_id, tx_counter_value);
+		k_msleep(7000);
 		LOG_INF("TX:%s", tx_buf);
 		// TODO: The error control should be implemented in the transmit function and it shouldn't shout down when an error occurs
 		err = transmit_broadcast(tx_counter_value, tx_buf, tx_len);
@@ -598,13 +599,13 @@ int main(void)
 			return err;
 		}
 
-		tx_counter_value++;
-		if ((tx_counter_value >= CONFIG_TX_TRANSMISSIONS) && CONFIG_TX_TRANSMISSIONS)
-		{
-			LOG_INF("Reached maximum number of transmissions (%d)",
-					CONFIG_TX_TRANSMISSIONS);
-			break;
-		}
+		// tx_counter_value++;
+		// if ((tx_counter_value >= CONFIG_TX_TRANSMISSIONS) && CONFIG_TX_TRANSMISSIONS)
+		// {
+		// 	LOG_INF("Reached maximum number of transmissions (%d)",
+		// 			CONFIG_TX_TRANSMISSIONS);
+		// 	break;
+		// }
 
 		// /* Wait for TX operation to complete. */
 		k_sem_take(&opt_sem, K_FOREVER);
