@@ -1,0 +1,98 @@
+Started new app
+Buttons init    LEDs init
+[00:00:00.500,579] <dbg> nrf_modem: nrf_modem_lib_init: Modem init callback: 0xc87d
+[00:00:00.646,545] <inf> app: DECT Modem Init done, temperature: 26
+[00:00:00.653,411] <inf> app: Dect NR+ PHY initialized, device ID: 62566
+[00:00:00.660,705] <inf> app: DECT NR+ version: 1
+[00:00:00.665,832] <inf> app: Variant count: 1
+[00:00:00.670,776] <inf> app: Variant 0:
+[00:00:00.675,201] <inf> app: Power class: 3
+[00:00:00.679,962] <inf> app: RX spatial streams: 1
+[00:00:00.685,333] <inf> app: RX TX diversity: 1
+[00:00:00.690,460] <inf> app: RX gain: -4
+[00:00:00.694,946] <inf> app: MCS max: 4
+[00:00:00.699,371] <inf> app: HARQ soft buffer size: 25344
+[00:00:00.705,383] <inf> app: HARQ process count max: 8
+[00:00:00.711,090] <inf> app: HARQ feedback delay: 2
+[00:00:00.716,583] <inf> app: Subcarrier scaling factor: 1
+[00:00:00.722,564] <inf> app: Fourier transform scaling factor: 1
+[00:00:03.810,760] <inf> app: Received header from device ID 21087, phy_header_valid 0, rssi_2 -63
+[00:00:03.820,251] <inf> app: RX(RSSI: -31.5): Hello RD! I'm 21087 (0)
+[00:00:04.222,229] <inf> app: Received header from device ID 21087, phy_header_valid 0, rssi_2 -62
+[00:00:04.231,719] <inf> app: RX(RSSI: -31.0): Hello RD! I'm 21087 (0)
+[00:00:04.633,697] <inf> app: Received header from device ID 21087, phy_header_valid 0, rssi_2 -62
+[00:00:04.643,188] <inf> app: RX(RSSI: -31.0): Hello RD! I'm 21087 (0)
+[00:00:05.045,166] <inf> app: Received header from device ID 21087, phy_header_valid 0, rssi_2 -61
+[00:00:05.054,656] <inf> app: RX(RSSI: -31.0): Hello RD! I'm 21087 (0)
+[00:00:05.456,634] <inf> app: Received header from device ID 21087, phy_header_valid 0, rssi_2 -61
+[00:00:05.466,156] <inf> app: RX(RSSI: -30.5): Hello RD! I'm 21087 (0)
+[00:00:05.868,103] <inf> app: Received header from device ID 21087, phy_header_valid 0, rssi_2 -61
+[00:00:05.877,593] <inf> app: RX(RSSI: -30.5): Hello RD! I'm 21087 (0)
+[00:00:06.279,602] <inf> app: Received header from device ID 21087, phy_header_valid 0, rssi_2 -61
+[00:00:06.289,062] <inf> app: RX(RSSI: -30.5): Hello RD! I'm 21087 (0)
+[00:00:06.691,070] <inf> app: Received header from device ID 21087, phy_header_valid 0, rssi_2 -60
+[00:00:06.700,561] <inf> app: RX(RSSI: -30.5): Hello RD! I'm 21087 (0)
+[00:00:07.102,539] <inf> app: Received header from device ID 21087, phy_header_valid 0, rssi_2 -62
+[00:00:07.112,030] <inf> app: RX(RSSI: -31.0): Hello RD! I'm 21087 (0)
+[00:00:07.514,007] <inf> app: Received header from device ID 21087, phy_header_valid 0, rssi_2 -61
+[00:00:07.523,498] <inf> app: RX(RSSI: -30.5): Hello RD! I'm 21087 (0)
+[00:00:07.925,476] <inf> app: Received header from device ID 21087, phy_header_valid 0, rssi_2 -61
+[00:00:07.934,967] <inf> app: RX(RSSI: -30.5): Hello RD! I'm 21087 (0)
+[00:00:08.336,944] <inf> app: Received header from device ID 21087, phy_header_valid 0, rssi_2 -60
+[00:00:08.346,435] <inf> app: RX(RSSI: -30.0): Hello RD! I'm 21087 (0)
+[00:00:10.651,550] <inf> app: Received header from device ID 4168, phy_header_valid 0, rssi_2 -51
+[00:00:10.660,980] <inf> app: RX(RSSI: -25.5): Hello RD! I'm 4168 (0)
+[00:00:10.668,029] <inf> app: TX START:62566
+[00:00:10.672,790] <inf> app: TX END:62566
+[00:00:15.662,567] <inf> app: Received header from device ID 4168, phy_header_valid 0, rssi_2 -52
+[00:00:15.671,966] <inf> app: RX(RSSI: -26.0): Hello RD! I'm 4168 (0)
+[00:00:15.679,168] <inf> app: TX START:62566
+[00:00:15.683,898] <inf> app: TX END:62566
+[00:00:20.673,583] <inf> app: Received header from device ID 4168, phy_header_valid 0, rssi_2 -51
+[00:00:20.682,983] <inf> app: RX(RSSI: -26.0): Hello RD! I'm 4168 (0)
+[00:00:20.690,246] <inf> app: TX START:62566
+[00:00:20.695,007] <inf> app: TX END:62566
+[00:00:25.684,600] <inf> app: Received header from device ID 4168, phy_header_valid 0, rssi_2 -42
+[00:00:25.694,000] <inf> app: RX(RSSI: -21.0): Hello RD! I'm 4168 (0)
+[00:00:25.701,354] <inf> app: TX START:62566
+[00:00:25.706,115] <inf> app: TX END:62566
+[00:00:30.695,617] <inf> app: Received header from device ID 4168, phy_header_valid 0, rssi_2 -56
+[00:00:30.705,017] <inf> app: RX(RSSI: -28.0): Hello RD! I'm 4168 (0)
+[00:00:30.712,463] <inf> app: TX START:62566
+[00:00:30.717,193] <inf> app: TX END:62566
+[00:00:35.706,634] <inf> app: Received header from device ID 4168, phy_header_valid 0, rssi_2 -57
+[00:00:35.716,033] <inf> app: RX(RSSI: -28.5): Hello RD! I'm 4168 (0)
+[00:00:35.723,571] <inf> app: TX START:62566
+[00:00:35.728,302] <inf> app: TX END:62566
+[00:00:40.717,651] <inf> app: Received header from device ID 4168, phy_header_valid 0, rssi_2 -57
+[00:00:40.727,050] <inf> app: RX(RSSI: -28.5): Hello RD! I'm 4168 (0)
+[00:00:40.734,649] <inf> app: TX START:62566
+[00:00:40.739,410] <inf> app: TX END:62566
+[00:00:45.728,668] <inf> app: Received header from device ID 4168, phy_header_valid 0, rssi_2 -56
+[00:00:45.738,037] <inf> app: RX(RSSI: -28.0): Hello RD! I'm 4168 (0)
+[00:00:45.745,758] <inf> app: TX START:62566
+[00:00:45.750,488] <inf> app: TX END:62566
+[00:00:50.739,654] <inf> app: Received header from device ID 4168, phy_header_valid 0, rssi_2 -56
+[00:00:50.749,053] <inf> app: RX(RSSI: -28.0): Hello RD! I'm 4168 (0)
+[00:00:50.756,866] <inf> app: TX START:62566
+[00:00:50.761,596] <inf> app: TX END:62566
+[00:00:55.750,671] <inf> app: Received header from device ID 4168, phy_header_valid 0, rssi_2 -56
+[00:00:55.760,070] <inf> app: RX(RSSI: -28.0): Hello RD! I'm 4168 (0)
+[00:00:55.767,974] <inf> app: TX START:62566
+[00:00:55.772,705] <inf> app: TX END:62566
+[00:01:00.761,688] <inf> app: Received header from device ID 4168, phy_header_valid 0, rssi_2 -55
+[00:01:00.771,087] <inf> app: RX(RSSI: -27.5): Hello RD! I'm 4168 (0)
+[00:01:00.779,052] <inf> app: TX START:62566
+[00:01:00.783,813] <inf> app: TX END:62566
+[00:01:05.772,705] <inf> app: Received header from device ID 4168, phy_header_valid 0, rssi_2 -56
+[00:01:05.782,104] <inf> app: RX(RSSI: -28.0): Hello RD! I'm 4168 (0)
+[00:01:05.790,161] <inf> app: TX START:62566
+[00:01:05.794,921] <inf> app: TX END:62566
+[00:01:10.783,721] <inf> app: Received header from device ID 4168, phy_header_valid 0, rssi_2 -56
+[00:01:10.793,090] <inf> app: RX(RSSI: -28.0): Hello RD! I'm 4168 (0)
+[00:01:10.801,269] <inf> app: TX START:62566
+[00:01:10.805,999] <inf> app: TX END:62566
+[00:01:15.794,738] <inf> app: Received header from device ID 4168, phy_header_valid 0, rssi_2 -56
+[00:01:15.804,107] <inf> app: RX(RSSI: -28.0): Hello RD! I'm 4168 (0)
+[00:01:15.812,347] <inf> app: TX START:62566
+[00:01:15.817,108] <inf> app: TX END:62566

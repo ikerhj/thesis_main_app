@@ -1,0 +1,30 @@
+[00:00:00.734,191] <inf> app: DECT Modem Init done, temperature: 25
+[00:00:00.740,966] <inf> app: Dect NR+ PHY initialized, device ID: 21087
+[00:00:00.748,168] <inf> app: DECT NR+ version: 1
+[00:00:00.753,265] <inf> app: Variant count: 1
+[00:00:00.758,117] <inf> app: Variant 0:
+[00:00:00.762,481] <inf> app: Power class: 2
+[00:00:00.767,211] <inf> app: RX spatial streams: 1
+[00:00:00.772,521] <inf> app: RX TX diversity: 1
+[00:00:00.777,557] <inf> app: RX gain: -4
+[00:00:00.782,012] <inf> app: MCS max: 4
+[00:00:00.786,376] <inf> app: HARQ soft buffer size: 25344
+[00:00:00.792,297] <inf> app: HARQ process count max: 8
+[00:00:00.797,943] <inf> app: HARQ feedback delay: 2
+[00:00:00.803,344] <inf> app: Subcarrier scaling factor: 1
+[00:00:00.809,295] <inf> app: Fourier transform scaling factor: 1
+[00:00:01.148,254] <inf> app: TX:Hello RD! I'm 21087 (0)
+[00:00:01.559,753] <inf> app: TX:Hello RD! I'm 21087 (0)
+[00:00:01.971,221] <inf> app: TX:Hello RD! I'm 21087 (0)
+[00:00:02.382,690] <inf> app: TX:Hello RD! I'm 21087 (0)
+[00:00:02.794,158] <inf> app: TX:Hello RD! I'm 21087 (0)
+[00:00:03.205,627] <inf> app: TX:Hello RD! I'm 21087 (0)
+[00:00:03.617,095] <inf> app: TX:Hello RD! I'm 21087 (0)
+[00:00:04.028,564] <inf> app: TX:Hello RD! I'm 21087 (0)
+[00:00:04.440,032] <inf> app: TX:Hello RD! I'm 21087 (0)
+[00:00:04.851,501] <inf> app: TX:Hello RD! I'm 21087 (0)
+[00:00:05.262,969] <inf> app: TX:Hello RD! I'm 21087 (0)
+[00:00:05.674,438] <inf> app: TX:Hello RD! I'm 21087 (0)
+[00:00:06.085,906] <inf> app: TX:Hello RD! I'm 21087 (0)
+[00:00:06.497,375] <inf> app: TX:Hello RD! I'm 21087 (0)
+[00:00:06.908,843] <inf> app: TX:Hello RD! I'm 21087 (0)
